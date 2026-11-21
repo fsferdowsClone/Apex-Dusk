@@ -1,6 +1,7 @@
 package com.example.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,7 +51,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -131,22 +136,33 @@ fun StartScreenOverlay(
             val isWide = maxWidth >= 720.dp
 
             if (isWide) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterHorizontally),
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .widthIn(max = 920.dp),
+                        .widthIn(max = 920.dp)
+                        .verticalScroll(rememberScrollState()),
                 ) {
-                    StartMainCard(
-                        state = state,
-                        onRideNow = onRideNow,
-                        onSelectLivery = onSelectLivery,
-                        modifier = Modifier.weight(1f),
-                    )
-                    DailyMissionsCard(
-                        missions = state.dailyMissions,
-                        modifier = Modifier.weight(0.9f),
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        StartMainCard(
+                            state = state,
+                            onRideNow = onRideNow,
+                            onSelectLivery = onSelectLivery,
+                            modifier = Modifier.weight(1f),
+                        )
+                        DailyMissionsCard(
+                            missions = state.dailyMissions,
+                            modifier = Modifier.weight(0.9f),
+                        )
+                    }
+                    DemoShowcaseCard(
+                        onCardClick = onOpenAbout,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             } else {
@@ -166,6 +182,10 @@ fun StartScreenOverlay(
                     )
                     DailyMissionsCard(
                         missions = state.dailyMissions,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    DemoShowcaseCard(
+                        onCardClick = onOpenAbout,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -193,27 +213,49 @@ private fun StartMainCard(
                 .fillMaxWidth()
                 .padding(horizontal = 22.dp, vertical = 22.dp),
         ) {
-            Text(
-                text = stringResource(R.string.app_name).uppercase(Locale.US),
-                fontFamily = OrbitronFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 34.sp,
-                letterSpacing = 3.sp,
-                color = TextPrimary,
-                textAlign = TextAlign.Center,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.img_app_favicon),
+                    contentDescription = stringResource(R.string.cd_game_emblem),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .border(
+                            width = 1.5.dp,
+                            brush = Brush.linearGradient(listOf(SunsetAmber, HorizonMagenta)),
+                            shape = RoundedCornerShape(14.dp),
+                        )
+                        .testTag("start_favicon_emblem"),
+                )
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    Text(
+                        text = stringResource(R.string.app_name).uppercase(Locale.US),
+                        fontFamily = OrbitronFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        letterSpacing = 2.5.sp,
+                        color = TextPrimary,
+                    )
 
-            Text(
-                text = stringResource(R.string.subtitle_tagline),
-                fontFamily = JetBrainsMonoFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
-                letterSpacing = 2.sp,
-                color = SunsetAmber,
-                textAlign = TextAlign.Center,
-            )
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = stringResource(R.string.subtitle_tagline),
+                        fontFamily = JetBrainsMonoFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        letterSpacing = 1.8.sp,
+                        color = SunsetAmber,
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -897,14 +939,28 @@ fun AboutPrivacyModal(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = stringResource(R.string.title_about_privacy),
-                        fontFamily = OrbitronFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        letterSpacing = 1.5.sp,
-                        color = TextPrimary,
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.img_app_favicon),
+                            contentDescription = stringResource(R.string.cd_game_emblem),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(1.dp, SunsetAmber.copy(alpha = 0.7f), RoundedCornerShape(10.dp)),
+                        )
+                        Text(
+                            text = stringResource(R.string.title_about_privacy),
+                            fontFamily = OrbitronFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            letterSpacing = 1.4.sp,
+                            color = TextPrimary,
+                        )
+                    }
                     Text(
                         text = "v${BuildConfig.VERSION_NAME}",
                         fontFamily = JetBrainsMonoFontFamily,
@@ -913,6 +969,11 @@ fun AboutPrivacyModal(
                         color = SunsetAmber,
                     )
                 }
+
+                DemoShowcaseStrip(
+                    onItemClick = {},
+                    clickable = false,
+                )
 
                 Column(
                     modifier = Modifier
@@ -984,6 +1045,117 @@ fun AboutPrivacyModal(
                         fontFamily = OrbitronFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
+                    )
+                }
+            }
+        }
+    }
+}
+
+private data class DemoShowcaseItem(
+    val drawableRes: Int,
+    val captionRes: Int,
+    val accent: Color,
+)
+
+private val demoShowcaseItems = listOf(
+    DemoShowcaseItem(
+        drawableRes = R.drawable.img_demo_dusk_highway,
+        captionRes = R.string.demo_caption_dusk,
+        accent = SunsetAmber,
+    ),
+    DemoShowcaseItem(
+        drawableRes = R.drawable.img_demo_nitro_rain,
+        captionRes = R.string.demo_caption_rain,
+        accent = NitroCyan,
+    ),
+    DemoShowcaseItem(
+        drawableRes = R.drawable.img_demo_garage_showroom,
+        captionRes = R.string.demo_caption_garage,
+        accent = HorizonMagenta,
+    ),
+)
+
+@Composable
+private fun DemoShowcaseCard(
+    onCardClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    GlassPanel(
+        borderColor = GlassBorderLight,
+        backgroundColor = GlassSurfaceElevated,
+        cornerRadius = 20.dp,
+        modifier = modifier.testTag("demo_showcase_card"),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.label_demo_showcase),
+                fontFamily = OrbitronFontFamily,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                letterSpacing = 1.2.sp,
+                color = TextPrimary,
+            )
+            DemoShowcaseStrip(
+                onItemClick = onCardClick,
+                clickable = true,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DemoShowcaseStrip(
+    onItemClick: () -> Unit,
+    clickable: Boolean,
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        items(demoShowcaseItems) { item ->
+            val caption = stringResource(item.captionRes)
+            Box(
+                modifier = Modifier
+                    .width(172.dp)
+                    .height(98.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(1.dp, item.accent.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                    .then(
+                        if (clickable) {
+                            Modifier.clickable(onClick = onItemClick)
+                        } else {
+                            Modifier
+                        }
+                    ),
+            ) {
+                Image(
+                    painter = painterResource(id = item.drawableRes),
+                    contentDescription = caption,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color.Transparent, Color(0xCC070414))
+                            )
+                        )
+                        .padding(horizontal = 8.dp, vertical = 5.dp),
+                ) {
+                    Text(
+                        text = caption,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        color = TextPrimary,
                     )
                 }
             }

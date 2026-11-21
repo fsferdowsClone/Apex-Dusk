@@ -1,31 +1,67 @@
-# Apex Dusk — Google Play Store Publishing Guide
+# Apex Dusk — Google Play Store Publishing & Testing Guide
 
-Everything in this Android project is configured for Google Play Store submission.
+Everything in this Android project is configured for Google Play Store production and testing tracks.
 
 ---
 
-## 1. App Identity & Technical Configuration
-- **App Name:** `Apex Dusk` (9 characters — compliant with Play Console 30-char limit, no buzzwords or emojis)
+## 1. Why Google Play Showed "Requested URL was not found on this server" (404)
+
+Seeing the Play Store 404 page (`play.google.com/store/apps/details?id=com.aistudio.apexdusk.rzqmxp`) happens when **you open the public Store URL before the app is live in Production** or **before joining the test via the Opt-In URL**.
+
+### Checklist to Fix the 404 Testing Link Immediately:
+1. **Use the Tester Opt-In URL (not the public Store URL):**
+   - In Google Play Console, go to **Testing → Internal testing** (or **Closed testing**) → **Testers** tab.
+   - Click **Copy link** under **"How testers join your test"**. It looks like:
+     `https://play.google.com/apps/testing/com.aistudio.apexdusk.rzqmxp`
+2. **Add & Save Your Tester Email List:**
+   - Under **Testers**, check the box next to your email list (make sure your Google account email, e.g. `fsferdows04@gmail.com`, is in that list) and click **Save changes** at the bottom-right.
+3. **Accept the Opt-In First:**
+   - Open `https://play.google.com/apps/testing/com.aistudio.apexdusk.rzqmxp` on your phone/browser while signed into that exact Google account, tap **Become a tester**, and then tap **"download it on Google Play"**.
+4. **Verify Track Status & Country Availability:**
+   - Make sure the release shows **Available to internal testers** (Internal testing goes live in ~15–60 minutes; Closed/Production tracks require Google review of 1–7 days).
+   - Under **Countries / regions**, confirm your country is enabled.
+5. **Note for New Personal Play Console Accounts (Closed Testing Rule):**
+   - Google requires personal developer accounts to run a **Closed test with at least 12 opted-in testers continuously for 14 days** before unlocking **Apply for production**. Until Production is approved and rolled out to 100%, the public store URL returns 404.
+
+---
+
+## 2. App Identity & Technical Configuration
+- **App Name:** `Apex Dusk` (9 chars — compliant with Play Console 30-char limit, no buzzwords or emojis)
 - **Package Name (`applicationId`):** `com.aistudio.apexdusk.rzqmxp`
-- **Version:** `versionCode = 1`, `versionName = "1.0.0"`
+- **Current Version:** `versionCode = 2`, `versionName = "2.0"`
 - **SDK Levels:** `minSdk = 24`, `targetSdk = 36`, `compileSdk = 36`
 - **Category Metadata:** `android:appCategory="game"` and `android:isGame="true"` in `AndroidManifest.xml`
-- **Release Optimization:** R8 minification (`isMinifyEnabled = true`) + resource shrinking (`isShrinkResources = true`) with crash stack-trace line-number preservation in `app/proguard-rules.pro`
-- **Permissions:** **Zero runtime or dangerous permissions** required (100% offline gameplay)
-- **Adaptive & Store Icons:** Adaptive launcher icons (`ic_launcher`, `ic_launcher_round`) plus Play Store assets in `play_store_assets/`:
-  - `play_store_assets/play_store_icon_512.png` (512 × 512 px)
-  - `play_store_assets/feature_graphic_1024x500.png` (1024 × 500 px)
+- **Release Optimization:** R8 code shrinking (`isMinifyEnabled = true`) + resource shrinking (`isShrinkResources = true`) with crash stack-trace line-number preservation in `app/proguard-rules.pro`
+- **Permissions:** **Zero runtime or dangerous permissions** (100% offline gameplay)
 
 ---
 
-## 2. How to Generate Your Signed Release `.aab` (Android App Bundle)
-Google Play requires an `.aab` signed with your upload key:
-1. In **AI Studio**, open the **Settings menu** and choose **Generate AAB** (or export the project ZIP to sign locally in Android Studio via **Build → Generate Signed Bundle / APK → Android App Bundle**).
-2. If signing locally with your own Play Upload Keystore, set `KEYSTORE_PATH`, `STORE_PASSWORD`, and `KEY_PASSWORD` environment variables before running `gradle :app:bundleRelease`.
+## 3. Ready-to-Upload Store Graphics (`play_store_assets/`)
+
+All required Google Play Console Store Listing graphics are prepared in `play_store_assets/`:
+
+| Play Console Slot | File | Dimensions |
+|---|---|---|
+| **App Icon** | `play_store_assets/play_store_icon_512.png` | `512 × 512` px (full-bleed RGB PNG) |
+| **Feature Graphic** | `play_store_assets/feature_graphic_1024x500.png` | `1024 × 500` px (RGB PNG) |
+| **Phone & Tablet Screenshot 1** | `play_store_assets/screenshot_1_dusk_highway.png` | `1920 × 1080` px (16:9 PNG) |
+| **Phone & Tablet Screenshot 2** | `play_store_assets/screenshot_2_nitro_rain.png` | `1920 × 1080` px (16:9 PNG) |
+| **Phone & Tablet Screenshot 3** | `play_store_assets/screenshot_3_garage_showroom.png` | `1920 × 1080` px (16:9 PNG) |
+| **Privacy Policy HTML** | `play_store_assets/privacy_policy.html` | Static HTML ready to host on GitHub Pages / Google Sites / Firebase Hosting |
+
+*(Tip: You can upload the 3 `1920 × 1080` screenshots to Phone, 7-inch Tablet, and 10-inch Tablet screenshot slots in Play Console.)*
 
 ---
 
-## 3. Ready-to-Use Google Play Console Listing Copy
+## 4. Generating & Uploading Your Signed `.aab`
+
+1. In **AI Studio**, open the **Settings menu** → **Generate AAB** (or export the ZIP and run Android Studio → **Build → Generate Signed Bundle / APK → Android App Bundle**).
+2. Always upload the **`.aab`** signed with the **same Upload Key** registered in Play Console (**App integrity → Play App Signing**), and increment `versionCode` for each new release.
+3. Also upload `app/build/outputs/mapping/release/mapping.txt` to **Play Console → Release → App bundle explorer → Downloads → ReTrace mapping file** if not bundled automatically (it is already embedded in `BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`).
+
+---
+
+## 5. Ready-to-Use Google Play Console Listing Copy
 
 ### App Name (Max 30 chars)
 `Apex Dusk`
@@ -49,23 +85,21 @@ KEY FEATURES
 • 100% Offline & Private: No ads, no tracking, and no account required.
 ```
 
+### Release Notes (`v2.0`)
+```text
+- Added Race Showcase gallery & game emblem branding on the start screen
+- Dynamic weather transitions (Clear Dusk, Light Mist, Light Rain)
+- Daily Missions system with stackable score multipliers up to 2.00x
+- R8 release size & performance optimizations for Google Play
+```
+
 ---
 
-## 4. Play Console Questionnaire Answers
-
-### App Category & Tags
-- **App or Game:** `Game`
-- **Category:** `Racing`
-
-### Data Safety Form
-- **Does your app collect or share any of the required user data types?** → **No**
-- **Reason:** Apex Dusk runs 100% offline. High scores, daily mission progress, bike livery, and mute preferences are stored strictly locally on-device via Android DataStore.
-- *(Note: Google Play Console still asks for a Privacy Policy URL on store listings if applicable; you can host a simple static page stating that Apex Dusk collects zero user data, matching the in-app **About & Privacy** screen.)*
-
-### Content Rating (IARC)
-- **Violence:** None (arcade traffic collision reset with sparks; no blood, gore, or weapons)
-- **Ads / In-App Purchases:** None
-- **Expected Rating:** `Everyone` (ESRB) / `PEGI 3`
-
-### Target Audience
-- General / All Ages (or 13+ if you prefer not to opt into the Families program).
+## 6. Play Console App Content Questionnaires
+- **Category:** `Game` → `Racing`
+- **Privacy Policy:** Host `play_store_assets/privacy_policy.html` (e.g., on GitHub Pages) and paste its public HTTPS URL into **App content → Privacy policy**.
+- **Data Safety:** **Does your app collect or share user data?** → **No** (100% offline, local DataStore only).
+- **Ads:** **No, my app does not contain ads.**
+- **App Access:** **All functionality is available without special access** (no login required).
+- **Content Rating (IARC):** No violence/blood/gambling/user-generated content → Expected rating: **Everyone / PEGI 3**.
+- **Target Audience:** General / 13+ (or All Ages if opting into Families).

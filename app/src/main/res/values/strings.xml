@@ -45,4 +45,9 @@
     <string name="label_gameplay_tips_title">SCORING &amp; BONUSES</string>
     <string name="body_gameplay_tips">• Pass closely by traffic above 119 KM/H for NEAR MISS combos (up to x10) and +22%% Nitro refill.\n• Complete Daily Missions to unlock up to a 2.00x base score multiplier.\n• Weather transitions dynamically between Clear Dusk, Light Mist, and Light Rain.</string>
     <string name="action_close">CLOSE</string>
+    <string name="cd_game_emblem">Apex Dusk game emblem</string>
+    <string name="label_demo_showcase">RACE SHOWCASE</string>
+    <string name="demo_caption_dusk">4-Lane Dusk Highway</string>
+    <string name="demo_caption_rain">Nitro Boost &amp; Light Rain</string>
+    <string name="demo_caption_garage">4 Custom Bike Liveries</string>
 </resources>
