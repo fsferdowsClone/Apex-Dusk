@@ -1,0 +1,6 @@
+{
+  "name": "Apex Dusk",
+  "description": "Endless 3D dusk highway sportbike racing game with near-miss combos, nitro boost, glassmorphic HUD, and synthesized audio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
