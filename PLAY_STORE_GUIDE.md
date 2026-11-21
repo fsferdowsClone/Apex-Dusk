@@ -4,31 +4,23 @@ Everything in this Android project is configured for Google Play Store productio
 
 ---
 
-## 1. Why Google Play Showed "Requested URL was not found on this server" (404)
+## 1. Troubleshooting Google Play Testing Errors (404 & "App not available")
 
-Seeing the Play Store 404 page (`play.google.com/store/apps/details?id=com.aistudio.apexdusk.rzqmxp`) happens when **you open the public Store URL before the app is live in Production** or **before joining the test via the Opt-In URL**.
-
-### Checklist to Fix the 404 Testing Link Immediately:
-1. **Use the Tester Opt-In URL (not the public Store URL):**
-   - In Google Play Console, go to **Testing → Internal testing** (or **Closed testing**) → **Testers** tab.
-   - Click **Copy link** under **"How testers join your test"**. It looks like:
-     `https://play.google.com/apps/testing/com.aistudio.apexdusk.rzqmxp`
-2. **Add & Save Your Tester Email List:**
-   - Under **Testers**, check the box next to your email list (make sure your Google account email, e.g. `fsferdows04@gmail.com`, is in that list) and click **Save changes** at the bottom-right.
-3. **Accept the Opt-In First:**
-   - Open `https://play.google.com/apps/testing/com.aistudio.apexdusk.rzqmxp` on your phone/browser while signed into that exact Google account, tap **Become a tester**, and then tap **"download it on Google Play"**.
-4. **Verify Track Status & Country Availability:**
-   - Make sure the release shows **Available to internal testers** (Internal testing goes live in ~15–60 minutes; Closed/Production tracks require Google review of 1–7 days).
-   - Under **Countries / regions**, confirm your country is enabled.
-5. **Note for New Personal Play Console Accounts (Closed Testing Rule):**
-   - Google requires personal developer accounts to run a **Closed test with at least 12 opted-in testers continuously for 14 days** before unlocking **Apply for production**. Until Production is approved and rolled out to 100%, the public store URL returns 404.
+- **If you see `"App not available — Your account hasn't yet been invited to participate in this app's internal testing program"`** on `play.google.com/apps/internaltest/...`:
+  This is a Google Play Console tester-access check (it cannot be changed inside Android app code):
+  1. **Select the Email List & Click "Save changes":** In Play Console → **Testing → Internal testing → Testers**, create/edit an email list containing your exact Gmail (`fsferdows04@gmail.com`), **check the checkbox next to that email list**, and click **Save changes** in the bottom-right corner. *(Uploading the `.aab` does not auto-invite the developer account.)*
+  2. **Match Your Signed-In Browser / Phone Account:** Click your profile picture at the top-right of `play.google.com` (or use an Incognito window) and make sure the active Google account is the exact invited Gmail, not another logged-in Google account.
+  3. **Confirm Release Rollout & Sync:** Under **Internal testing → Releases**, make sure the release status is **Available to internal testers** (not **Draft** or paused in **Publishing overview**), and wait **5–15 minutes** after saving the tester list.
+- **If you see `404 ("Requested URL was not found on this server")`** on `play.google.com/store/apps/details?id=com.aistudio.apexdusk.rzqmxp`:
+  1. Open the **Opt-In link** (`https://play.google.com/apps/testing/com.aistudio.apexdusk.rzqmxp` or `https://play.google.com/apps/internaltest/...`) from Play Console's **Testers** tab, tap **Become a tester**, and then tap **download it on Google Play**.
+  2. Remember that personal Play Console accounts require **12+ opted-in testers in Closed Testing for 14 continuous days** before Production can be approved; the public Store URL stays 404 until Production is live.
 
 ---
 
 ## 2. App Identity & Technical Configuration
 - **App Name:** `Apex Dusk` (9 chars — compliant with Play Console 30-char limit, no buzzwords or emojis)
 - **Package Name (`applicationId`):** `com.aistudio.apexdusk.rzqmxp`
-- **Current Version:** `versionCode = 2`, `versionName = "2.0"`
+- **Current Version:** `versionCode = 3`, `versionName = "3.0"`
 - **SDK Levels:** `minSdk = 24`, `targetSdk = 36`, `compileSdk = 36`
 - **Category Metadata:** `android:appCategory="game"` and `android:isGame="true"` in `AndroidManifest.xml`
 - **Release Optimization:** R8 code shrinking (`isMinifyEnabled = true`) + resource shrinking (`isShrinkResources = true`) with crash stack-trace line-number preservation in `app/proguard-rules.pro`
